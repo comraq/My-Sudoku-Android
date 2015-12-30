@@ -16,13 +16,6 @@
   android:id="@+id/content"
   tools:showIn="@layout/activity_sudoku_game">
 
-  <EditText
-    android:id="@+id/edit_message"
-    android:layout_height="wrap_content"
-    android:layout_width="match_parent"
-    android:hint="@string/edit_message"
-    android:inputType="number"/>
-
   <android.support.v7.widget.GridLayout
     android:id="@+id/test_grid_layout"
     android:layout_height="wrap_content"
@@ -51,8 +44,7 @@
       android:layout_width="0dp"
       android:layout_weight="1"
       android:text="@string/button_reset"
-      android:onClick="testToastShort"
-      android:enabled="false"/>
+      android:onClick="testToastShort"/>
 
     <Button
       android:id="@+id/hint_button"
@@ -60,8 +52,7 @@
       android:layout_width="0dp"
       android:layout_weight="1"
       android:text="@string/button_hint"
-      android:onClick="testToastShort"
-      android:enabled="false"/>
+      android:onClick="testToastShort"/>
 
     <Button
       android:id="@+id/check_button"
@@ -69,7 +60,6 @@
       android:layout_width="0dp"
       android:layout_weight="1"
       android:text="@string/button_check"
-      android:onClick="disableEditText"
       android:enabled="false"/>
   </LinearLayout>
 
