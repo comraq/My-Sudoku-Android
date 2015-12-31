@@ -15,4 +15,5 @@
 
     <string name="custom_dialog_pos_button">Cancel</string>
     <string name="custom_dialog_neg_button">Yes</string>
+    <string name="solver_generate_error">Error generating sudoku.</string>
 </resources>

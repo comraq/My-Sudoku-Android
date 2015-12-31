@@ -6,19 +6,23 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayout;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Observable;
+import java.util.Observer;
 
-public class SudokuGameActivity extends AppCompatActivity {
+public class SudokuGameActivity extends AppCompatActivity implements View.OnClickListener, Observer {
 
   private final static int BLOCK_SEPARATOR = Color.parseColor("#6ced38");
   private final static int GRID_LINES = Color.parseColor("#96dfe1");
 
-  private int dimensions;
   private GridLayout myGridLayout;
   private GridLayout.LayoutParams gridParams, cellParams;
   private Map<Integer, CellTextView> textCells;
@@ -26,6 +30,8 @@ public class SudokuGameActivity extends AppCompatActivity {
   private Button generateButton, resetButton, hintButton, checkButton;
 
   private Sudoku sudoku;
+  private int dimensions;
+  private List<Integer> hintSquares;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -53,9 +59,33 @@ public class SudokuGameActivity extends AppCompatActivity {
         RelativeLayout layout = (RelativeLayout) findViewById(R.id.content);
         layout.addView(textView);*/
 
-    sudoku = new Sudoku().initialize();
-
+    sudoku = new Sudoku().initialize(4);
     initialize();
+  }
+
+  @Override
+  public void onClick(View v) {
+    switch (v.getId()) {
+      case R.id.game_generate_button:
+        createGrid(v);
+        fillGrid(Solver.CHALLENGE);
+        break;
+      case R.id.game_reset_button:
+        resetGrid();
+        break;
+      case R.id.game_hint_button:
+        testToastShort(v);
+        break;
+      case R.id.game_check_button:
+        break;
+      default:
+        Toast.makeText(this, "Unidentified button! id: " + v.getId(), Toast.LENGTH_SHORT).show();
+    }
+  }
+
+  @Override
+  public void update(Observable observable, Object data) {
+
   }
 
   public void testToastShort(View view) {
@@ -78,7 +108,7 @@ public class SudokuGameActivity extends AppCompatActivity {
 
         gridParams.columnSpec = GridLayout.spec(c, 1.0f);
         myGridLayout.addView(grid, new GridLayout.LayoutParams(gridParams));
-        createEditTexts(grid, r * (int) Math.pow(dimensions, 3) + c * dimensions);
+        createEditTexts(grid, r * (int) (Math.pow(dimensions, 3) + 0.5) + c * dimensions);
       }
     }
   }
@@ -94,9 +124,41 @@ public class SudokuGameActivity extends AppCompatActivity {
 
         textCell = new CellTextView(this, maxLength);
         grid.addView(textCell, new GridLayout.LayoutParams(cellParams));
-        textCells.put(squareNum + r * (int) Math.pow(dimensions, 2) + c, textCell);
+        textCells.put(squareNum + r * (int) (Math.pow(dimensions, 2) + 0.5) + c, textCell);
       }
     }
+  }
+
+  private void fillGrid(String diff) {
+    try {
+      sudoku.setSolution(sudoku.getSolver().generate(diff));
+      List<Cell> cells = sudoku.getSolution().getCells();
+
+      for (int i = 0; i < cells.size(); ++i) {
+        CellTextView textCell = textCells.get(i);
+        textCell.setText("");
+        if (!cells.get(i).getValues().isEmpty()) {
+          textCell.setText(Integer.toString(cells.get(i).getValues().get(0)));
+          textCell.setEnabled(false);
+        } else {
+          textCell.setEnabled(true);
+        }
+      }
+    } catch (CloneNotSupportedException e) {
+      Toast.makeText(this, R.string.solver_generate_error, Toast.LENGTH_LONG).show();
+    }
+    hintSquares = new ArrayList<Integer>(sudoku.getSquares());
+  }
+
+  private void resetGrid() {
+    List<Cell> cells = sudoku.getSolution().getCells();
+    for (int i = 0; i < cells.size(); ++i) {
+      if (cells.get(i).getValues().isEmpty()) {
+        textCells.get(i).setText("");
+        textCells.get(i).setBackgroundColor(CellTextView.UNCHECK);
+      }
+    }
+    hintSquares = new ArrayList<Integer>(sudoku.getSquares());
   }
 
   private void initialize() {
@@ -105,14 +167,19 @@ public class SudokuGameActivity extends AppCompatActivity {
 
     textCells = new HashMap<Integer, CellTextView>();
 
-    myGridLayout = (GridLayout) findViewById(R.id.test_grid_layout);
+    myGridLayout = (GridLayout) findViewById(R.id.game_grid_layout);
     myGridLayout.setRowCount(dimensions);
     myGridLayout.setColumnCount(dimensions);
 
-    generateButton = (Button) findViewById(R.id.generate_button);
-    resetButton = (Button) findViewById(R.id.reset_button);
-    hintButton = (Button) findViewById(R.id.hint_button);
-    checkButton = (Button) findViewById(R.id.check_button);
+    generateButton = (Button) findViewById(R.id.game_generate_button);
+    resetButton = (Button) findViewById(R.id.game_reset_button);
+    hintButton = (Button) findViewById(R.id.game_hint_button);
+    checkButton = (Button) findViewById(R.id.game_check_button);
+
+    generateButton.setOnClickListener(this);
+    resetButton.setOnClickListener(this);
+    hintButton.setOnClickListener(this);
+    checkButton.setOnClickListener(this);
 
     setActivityTitle();
     initCellParams();
@@ -128,5 +195,31 @@ public class SudokuGameActivity extends AppCompatActivity {
 
   private void setActivityTitle() {
     this.setTitle(dimensions + "x" + dimensions + " Sudoku");
+  }
+
+  private enum SudokuState {
+    INIT("Press Generate to Select a Sudoku"),
+    GENERATED("Generated a New Sudoku"),
+    RESETTED("Here is the Original Sudoku"),
+    PLAYING("Playing"),
+    SOLVED("All Solved!");
+
+    private String theMessage;
+
+    SudokuState(String m) {
+      theMessage = m;
+    }
+
+    String message() {
+      return theMessage;
+    }
+  }
+
+  private class SudokuGame extends Observable {
+    private SudokuState currentState = SudokuState.INIT;
+
+    private void updateState(SudokuState nextState) {
+
+    }
   }
 }

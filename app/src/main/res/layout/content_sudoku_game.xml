@@ -14,10 +14,23 @@
   tools:context="adam.javasudoku.SudokuGameActivity"
 
   android:id="@+id/content"
-  tools:showIn="@layout/activity_sudoku_game">
+  tools:showIn="@layout/activity_sudoku_game"
+  android:background="#e6ff56">
+
+  <TextView
+    android:id="@+id/game_status_panel"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:textAppearance="?android:attr/textAppearanceLarge"
+    android:text="Large Text"
+    android:layout_gravity="center_horizontal"
+    android:editable="false"
+    android:enabled="false"
+    android:gravity="center"
+    android:background="#c4d09e"/>
 
   <android.support.v7.widget.GridLayout
-    android:id="@+id/test_grid_layout"
+    android:id="@+id/game_grid_layout"
     android:layout_height="wrap_content"
     android:layout_width="match_parent"/>
     <!--android:layout_weight="9"-->
@@ -31,31 +44,28 @@
 
 
     <Button
-      android:id="@+id/generate_button"
+      android:id="@+id/game_generate_button"
       android:layout_height="wrap_content"
       android:layout_width="0dp"
       android:layout_weight="1"
-      android:text="@string/button_generate"
-      android:onClick="createGrid"/>
+      android:text="@string/button_generate"/>
 
     <Button
-      android:id="@+id/reset_button"
+      android:id="@+id/game_reset_button"
       android:layout_height="wrap_content"
       android:layout_width="0dp"
       android:layout_weight="1"
-      android:text="@string/button_reset"
-      android:onClick="testToastShort"/>
+      android:text="@string/button_reset"/>
 
     <Button
-      android:id="@+id/hint_button"
+      android:id="@+id/game_hint_button"
       android:layout_height="wrap_content"
       android:layout_width="0dp"
       android:layout_weight="1"
-      android:text="@string/button_hint"
-      android:onClick="testToastShort"/>
+      android:text="@string/button_hint"/>
 
     <Button
-      android:id="@+id/check_button"
+      android:id="@+id/game_check_button"
       android:layout_height="wrap_content"
       android:layout_width="0dp"
       android:layout_weight="1"
