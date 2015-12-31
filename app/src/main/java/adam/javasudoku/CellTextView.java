@@ -11,11 +11,11 @@ import android.widget.EditText;
  * Created by adam on 2015-12-29.
  */
 public class CellTextView extends EditText {
-  public final static int INCORRECT = Color.parseColor("#f97474");
-  public final static int CORRECT = Color.GREEN;
-  public final static int UNCHECK = Color.WHITE;
-  public final static int HINT = Color.YELLOW;
-  public final static int DISABLED = Color.rgb(240, 240, 240);
+  private final static int INCORRECT = Color.parseColor("#f97474");
+  private final static int CORRECT = Color.GREEN;
+  private final static int UNCHECK = Color.WHITE;
+  private final static int HINT = Color.YELLOW;
+  private final static int DISABLED = Color.rgb(240, 240, 240);
 
   public CellTextView(Context context, int maxLength) {
     super(context);
@@ -46,4 +46,12 @@ public class CellTextView extends EditText {
       setBackgroundColor(DISABLED);
     }
   }
+
+  public void isCorrect() { setBackgroundColor(CORRECT); }
+
+  public void isIncorrect() { setBackgroundColor(INCORRECT); }
+
+  public void uncheck() { setBackgroundColor(UNCHECK); }
+
+  public void hinted() { setBackgroundColor(HINT); }
 }
