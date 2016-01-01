@@ -1,22 +1,24 @@
 package adam.javasudoku;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayout;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.util.SparseArray;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.concurrent.ThreadLocalRandom;
@@ -27,9 +29,10 @@ public class SudokuGameActivity extends AppCompatActivity implements View.OnClic
   private final static int GRID_LINES = Color.parseColor("#96dfe1");
 
   private Button generateButton, resetButton, hintButton, checkButton;
+  private TextView statusTextView;
   private GridLayout myGridLayout;
   private GridLayout.LayoutParams gridParams, cellParams;
-  private Map<Integer, CellTextView> textCells;
+  private SparseArray<CellTextView> textCells;
 
   private SudokuGame sudokuGame;
 
@@ -39,16 +42,8 @@ public class SudokuGameActivity extends AppCompatActivity implements View.OnClic
     setContentView(R.layout.activity_sudoku_game);
     Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
     setSupportActionBar(toolbar);
-
-        /*FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });*/
     getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    getSupportActionBar().setIcon(R.mipmap.ic_launcher);
 
         /*Intent intent = getIntent();
         String message = intent.getStringExtra(MainActivity.EXTRA_MESSAGE);
@@ -59,7 +54,6 @@ public class SudokuGameActivity extends AppCompatActivity implements View.OnClic
         RelativeLayout layout = (RelativeLayout) findViewById(R.id.content);
         layout.addView(textView);*/
 
-    //sudoku = new Sudoku().initialize(4);
     initialize();
   }
 
@@ -67,11 +61,10 @@ public class SudokuGameActivity extends AppCompatActivity implements View.OnClic
   public void onClick(View v) {
     switch (v.getId()) {
       case R.id.game_generate_button:
-        createGrid();
-        sudokuGame.fillGrid(Solver.CHALLENGE);
+        generate();
         break;
       case R.id.game_reset_button:
-        sudokuGame.resetGrid();
+        reset();
         break;
       case R.id.game_hint_button:
         sudokuGame.hint();
@@ -87,26 +80,39 @@ public class SudokuGameActivity extends AppCompatActivity implements View.OnClic
   @Override
   public void update(Observable observable, Object data) {
     SudokuState state = sudokuGame.currentState;
-    if ((state == SudokuState.GENERATED) || (state == SudokuState.RESETTED)) {
-      resetButton.setEnabled(false);
-      checkButton.setEnabled(false);
-      hintButton.setEnabled(true);
-    } else if (state == SudokuState.PLAYING) {
-      resetButton.setEnabled(true);
-      checkButton.setEnabled(true);
-      hintButton.setEnabled(true);
-      uncheckTextCells();
-    } else if (state == SudokuState.SOLVED){
-      resetButton.setEnabled(true);
-      checkButton.setEnabled(false);
-      hintButton.setEnabled(false);
-      gameWon();
+    statusTextView.setText(sudokuGame.currentState.message());
+    switch (state) {
+      case INIT:
+        resetButton.setEnabled(false);
+        checkButton.setEnabled(false);
+        hintButton.setEnabled(false);
+        break;
+      case GENERATED:
+      case RESETTED:
+        resetButton.setEnabled(false);
+        checkButton.setEnabled(false);
+        hintButton.setEnabled(true);
+        break;
+      case PLAYING:
+        resetButton.setEnabled(true);
+        checkButton.setEnabled(true);
+        hintButton.setEnabled(true);
+        uncheckTextCells();
+        break;
+      case SOLVED:
+        resetButton.setEnabled(true);
+        checkButton.setEnabled(false);
+        hintButton.setEnabled(false);
+        gameWon();
+        break;
+      default:
+        Toast.makeText(this, "Undefined state!", Toast.LENGTH_SHORT).show();
     }
   }
 
-  public void testToastShort(View view) {
-    String msg = "Testing short toast with button: " + ((Button) view).getText().toString();
-    Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+  private void generate() {
+    createGrid();
+    sudokuGame.fillGrid(Solver.CHALLENGE);
   }
 
   private void createGrid() {
@@ -147,19 +153,44 @@ public class SudokuGameActivity extends AppCompatActivity implements View.OnClic
   }
 
   private void uncheckTextCells() {
-    for (Map.Entry<Integer, CellTextView> entry : textCells.entrySet()) {
-      if (entry.getValue().isEnabled()) entry.getValue().uncheck();
+    CellTextView textCell;
+    for (int i = 0; i < textCells.size(); ++i) {
+      textCell = textCells.valueAt(i);
+      if (textCell.isEnabled()) textCell.uncheck();
     }
   }
 
   private void gameWon() {
-    for (Map.Entry<Integer, CellTextView> entry : textCells.entrySet()) entry.getValue().setEnabled(false);
-    //TODO: Implement and launch game won dialog
+    List<Cell> cells = sudokuGame.sudoku.getSolution().getCells();
+    for (int i = 0; i < cells.size(); ++i) {
+      if (cells.get(i).getValues().isEmpty()) {
+        textCells.get(i).setEnabled(false);
+        textCells.get(i).isCorrect();
+      }
+    }
+    AlertDialog.Builder wonDialog = new AlertDialog.Builder(this);
+
+    wonDialog.setTitle(getString(R.string.won_dialog_title));
+    wonDialog.setMessage(getString(R.string.won_dialog_message));
+
+    wonDialog.setNegativeButton(getString(R.string.dialog_ok_button), new DialogInterface.OnClickListener() {
+      @Override
+      public void onClick(DialogInterface dialog, int which) {
+        dialog.dismiss();
+      }
+    });
+    wonDialog.setPositiveButton(getString(R.string.dialog_generate_button), new DialogInterface.OnClickListener() {
+      @Override
+      public void onClick(DialogInterface dialog, int which) {
+        generate();
+      }
+    });
+
+    wonDialog.show();
   }
 
   private void initialize() {
     //Initializing fields in MainActivity
-
     sudokuGame = new SudokuGame();
     sudokuGame.addObserver(this);
 
@@ -171,6 +202,7 @@ public class SudokuGameActivity extends AppCompatActivity implements View.OnClic
     resetButton = (Button) findViewById(R.id.game_reset_button);
     hintButton = (Button) findViewById(R.id.game_hint_button);
     checkButton = (Button) findViewById(R.id.game_check_button);
+    statusTextView = (TextView) findViewById(R.id.game_status_panel);
 
     generateButton.setOnClickListener(this);
     resetButton.setOnClickListener(this);
@@ -179,6 +211,8 @@ public class SudokuGameActivity extends AppCompatActivity implements View.OnClic
 
     setActivityTitle();
     initCellParams();
+    
+    sudokuGame.updateState(SudokuState.INIT);
   }
 
   private void initCellParams() {
@@ -191,6 +225,28 @@ public class SudokuGameActivity extends AppCompatActivity implements View.OnClic
 
   private void setActivityTitle() {
     this.setTitle(sudokuGame.dimensions + "x" + sudokuGame.dimensions + " Sudoku");
+  }
+
+  private void reset() {
+    AlertDialog.Builder resetDialog = new AlertDialog.Builder(this);
+
+    resetDialog.setTitle(getString(R.string.reset_dialog_title));
+    resetDialog.setMessage(getString(R.string.reset_dialog_message));
+
+    resetDialog.setNegativeButton(R.string.dialog_yes_button, new DialogInterface.OnClickListener() {
+      @Override
+      public void onClick(DialogInterface dialog, int which) {
+        sudokuGame.resetGrid();
+      }
+    });
+
+    resetDialog.setPositiveButton(R.string.dialog_cancel_button, new DialogInterface.OnClickListener() {
+      @Override
+      public void onClick(DialogInterface dialog, int which) {
+        dialog.dismiss();
+      }
+    });
+    resetDialog.show();
   }
 
   private enum SudokuState {
@@ -212,16 +268,16 @@ public class SudokuGameActivity extends AppCompatActivity implements View.OnClic
   }
 
   private class SudokuGame extends Observable implements TextWatcher {
-    private SudokuState currentState = SudokuState.INIT;
+    private SudokuState currentState;
 
     private Sudoku sudoku;
     private int dimensions;
     private List<Integer> hintSquares;
 
     private SudokuGame () {
-      sudoku = new Sudoku().initialize(4);
+      sudoku = new Sudoku().initialize(3);
       dimensions = sudoku.getDimensions();
-      textCells = new HashMap<Integer, CellTextView>();
+      textCells = new SparseArray<CellTextView>();
     }
 
     @Override
@@ -273,6 +329,7 @@ public class SudokuGameActivity extends AppCompatActivity implements View.OnClic
         if (cells.get(i).getValues().isEmpty()) {
           textCells.get(i).setText("");
           textCells.get(i).uncheck();
+          textCells.get(i).setEnabled(true);
         }
       }
       hintSquares = new ArrayList<Integer>(sudoku.getSquares());
@@ -309,7 +366,7 @@ public class SudokuGameActivity extends AppCompatActivity implements View.OnClic
       for (List<Integer> values = sudoku.getSolver().getGenValues(); !hintSquares.isEmpty(); hintSquares.remove(randS)) {
         randS = hintSquares.get(ThreadLocalRandom.current().nextInt(0, hintSquares.size()));
         CellTextView textCell = textCells.get(randS);
-        if (textCell.isEnabled() && !textCell.getText().equals(Integer.toString(values.get(randS)))) {
+        if (textCell.isEnabled() && !textCell.getText().toString().equals(Integer.toString(values.get(randS)))) {
           textCell.setText(Integer.toString(values.get(randS)));
           textCell.hinted();
           hintSquares.remove(randS);

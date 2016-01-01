@@ -21,26 +21,26 @@
     android:id="@+id/game_status_panel"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:minLines="3"
     android:textAppearance="?android:attr/textAppearanceLarge"
-    android:text="Large Text"
     android:layout_gravity="center_horizontal"
-    android:editable="false"
     android:enabled="false"
     android:gravity="center"
-    android:background="#c4d09e"/>
+    android:background="@drawable/border"
+    android:textStyle="bold"
+    android:typeface="serif"/>
 
   <android.support.v7.widget.GridLayout
     android:id="@+id/game_grid_layout"
     android:layout_height="wrap_content"
-    android:layout_width="match_parent"/>
-    <!--android:layout_weight="9"-->
+    android:layout_width="match_parent"
+    android:layout_margin="5dp"/>
 
   <LinearLayout
     android:orientation="horizontal"
     android:layout_height="wrap_content"
     android:layout_width="match_parent"
     android:gravity="center_horizontal">
-    <!--android:layout_weight="1"-->
 
 
     <Button
@@ -69,8 +69,7 @@
       android:layout_height="wrap_content"
       android:layout_width="0dp"
       android:layout_weight="1"
-      android:text="@string/button_check"
-      android:enabled="false"/>
+      android:text="@string/button_check"/>
   </LinearLayout>
 
 </LinearLayout>

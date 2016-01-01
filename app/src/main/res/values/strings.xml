@@ -1,7 +1,6 @@
 <resources>
     <string name="app_name">JavaSudoku</string>
     <string name="edit_message">Enter a message</string>
-    <!--string name="title_activity_display_message">My Test Message</string-->
 
     <string name="action_settings">Settings</string>
     <string name="action_exit">Exit</string>
@@ -13,7 +12,15 @@
     <string name="button_quit">Quit</string>
     <string name="button_new_game">New Game</string>
 
-    <string name="custom_dialog_pos_button">Cancel</string>
-    <string name="custom_dialog_neg_button">Yes</string>
+    <string name="dialog_cancel_button">Cancel</string>
+    <string name="dialog_yes_button">Yes</string>
     <string name="solver_generate_error">Error generating sudoku.</string>
+    <string name="quit_dialog_title">Exiting the Application</string>
+    <string name="quit_dialog_message">Are you sure you want to quit?</string>
+    <string name="reset_dialog_title">Reset</string>
+    <string name="reset_dialog_message">Are you sure you want to reset the game?</string>
+    <string name="won_dialog_message">You solved the Sudoku!</string>
+    <string name="won_dialog_title">Congratulations</string>
+    <string name="dialog_ok_button">Ok</string>
+    <string name="dialog_generate_button">Generate New Sudoku</string>
 </resources>
