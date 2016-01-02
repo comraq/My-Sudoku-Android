@@ -1,6 +1,5 @@
 package adam.javasudoku;
 
-import android.app.Fragment;
 import android.content.Context;
 import android.support.v7.app.AlertDialog;
 import android.app.Dialog;
@@ -14,17 +13,25 @@ import android.widget.Toast;
  */
 public class CustomDialogFragment extends DialogFragment {
 
-  private static final String TITLE = "title";
+  //private static final String TITLE = "title";
   private static final String MESSAGE = "message";
+  private static final String NEG_BUTTON = "neg";
+  private static final String POS_BUTTON = "pos";
 
   private CustomDialogListener dialogListener;
 
-  public static CustomDialogFragment newInstance(String title, String message) {
+  public static CustomDialogFragment newInstance(Context context, int msgId) {
     CustomDialogFragment f = new CustomDialogFragment();
     Bundle b = new Bundle();
 
-    b.putString(TITLE, title);
-    b.putString(MESSAGE, message);
+    b.putString(MESSAGE, context.getString(msgId));
+    /*switch(msgId) {
+      case R.string.quit_dialog_message:
+      case R.string.reset_dialog_message:
+        b.putString(NEG_BUTTON, context.getString(R.string.dialog_yes_button));
+        b.putString(POS_BUTTON, context.getString(R.string.dialog_cancel_button));
+
+    }*/
 
     f.setArguments(b);
     return f;
@@ -36,12 +43,12 @@ public class CustomDialogFragment extends DialogFragment {
 
   @Override
   public Dialog onCreateDialog(Bundle savedInstanceState) {
-    final String title = getArguments().getString(TITLE);
+    //final String title = getArguments().getString(TITLE);
     final String message = getArguments().getString(MESSAGE);
 
     AlertDialog.Builder theDialog = new AlertDialog.Builder(getActivity());
 
-    theDialog.setTitle(title);
+    //theDialog.setTitle(title);
     theDialog.setMessage(message);
 
     theDialog.setNegativeButton(R.string.dialog_yes_button, new DialogInterface.OnClickListener() {
