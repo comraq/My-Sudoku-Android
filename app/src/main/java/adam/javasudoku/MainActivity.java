@@ -9,11 +9,13 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.preference.DialogPreference;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Menu;
@@ -27,13 +29,14 @@ import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
-public class MainActivity extends AppCompatActivity implements Observer {
+public class MainActivity extends AppCompatActivity implements Observer, CustomDialogFragment.CustomDialogListener {//, View.OnClickListener {
 
   //Static Constants
   //public final static String EXTRA_MESSAGE = "title";
   private final static int TEST_DIMENSION = 3;
 
   private DialogInterface.OnClickListener quitListener, dismissListener;
+  CustomDialogFragment genDiagFrag;
 
   private Sudoku sudoku;
   private List<Integer> hintSquares;
@@ -45,10 +48,11 @@ public class MainActivity extends AppCompatActivity implements Observer {
     setSupportActionBar(toolbar);
     getSupportActionBar().setIcon(R.mipmap.ic_launcher);
 
+    //generateDialog = new GenerateDialogPreference(this, getResources().getXml(R.xml.preferences));
+    initDialogListeners();
     FragmentTransaction ft = getFragmentManager().beginTransaction();
     ft.add(R.id.main_activity, new MainFragment());
     ft.commit();
-    initDialogListeners();
 
     /*FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
     fab.setOnClickListener(new View.OnClickListener() {
@@ -75,6 +79,7 @@ public class MainActivity extends AppCompatActivity implements Observer {
     switch (item.getItemId()) {
       //noinspection SimplifiableIfStatement
       case R.id.action_settings:
+        promptGenerate();
         return true;
 
       case R.id.action_exit:
@@ -82,6 +87,10 @@ public class MainActivity extends AppCompatActivity implements Observer {
         return true;
 
       case R.id.action_test1:
+        FragmentTransaction ft = getFragmentManager().beginTransaction();
+        ft.replace(R.id.main_activity, new GenerateOptionsFragment());//ft.replace(R.id.frag_generate_preference, new GenerateOptionsFragment());
+        ft.addToBackStack(null);
+        ft.commit();
         return true;
 
       case R.id.action_test2:
@@ -101,7 +110,38 @@ public class MainActivity extends AppCompatActivity implements Observer {
   }
 
   public void promptGenerate() {
-    newSudoku(TEST_DIMENSION, Solver.CHALLENGE);
+    if (genDiagFrag == null) {
+      genDiagFrag = CustomDialogFragment.newInstance(this, R.string.dialog_generate_title, R.string.dialog_generate_button, R.string.dialog_cancel_button);
+      Log.i("test", "new genDiagFrag");
+    }
+    genDiagFrag.show(getFragmentManager(), "Generate Dialog Fragment");
+  }
+
+  @Override
+  public void doNegClick(int dimensionsId, int diffId) {
+    if (!(getFragmentManager().findFragmentById(R.id.main_activity) instanceof GameFragment)) {
+      showGameFragment();
+      getFragmentManager().executePendingTransactions();
+    }
+    int dimensions = 3;
+    String diff;
+    if (dimensionsId == R.id.radio_dimensions_four) dimensions = 4;
+    switch (diffId) {
+      case R.id.radio_diff_beginner:
+        diff = Solver.BEGINNER;
+        break;
+      case R.id.radio_diff_casual:
+        diff = Solver.CASUAL;
+        break;
+      case R.id.radio_diff_challenge:
+        diff = Solver.CHALLENGE;
+        break;
+      default:
+        diff = Solver.CASUAL;
+    }
+    newSudoku(dimensions, diff);
+    GameFragment game = (GameFragment) getFragmentManager().findFragmentById(R.id.main_activity);
+    game.updateBoard();
   }
 
   public void promptQuit() {
@@ -145,20 +185,18 @@ public class MainActivity extends AppCompatActivity implements Observer {
   }
 
   private void setActivityTitle() {
-    this.setTitle(sudoku.getDimensions() + "x" + sudoku.getDimensions() + " Sudoku");
+    if (getFragmentManager().findFragmentById(R.id.main_activity) instanceof MainFragment) {
+      this.setTitle(getString(R.string.app_name));
+    } else {
+      this.setTitle(sudoku.getDimensions() + "x" + sudoku.getDimensions() + " Sudoku");
+    };
   }
 
-  public Sudoku getSudoku() {
-    return sudoku;
-  }
+  public Sudoku getSudoku() { return sudoku; }
 
-  public List<Integer> getHintSquares() {
-    return hintSquares;
-  }
+  public List<Integer> getHintSquares() { return hintSquares; }
 
-  public DialogInterface.OnClickListener getDismissListener() {
-    return dismissListener;
-  }
+  public DialogInterface.OnClickListener getDismissListener() { return dismissListener; }
 
   @Override
   public void update(Observable observable, Object data) {
@@ -173,9 +211,9 @@ public class MainActivity extends AppCompatActivity implements Observer {
   public void onBackPressed() {
     if (getFragmentManager().getBackStackEntryCount() > 0) {
       getFragmentManager().popBackStackImmediate();
+      setActivityTitle();
     } else {
       promptQuit();
-      //super.onBackPressed();
     }
   }
 
@@ -198,4 +236,14 @@ public class MainActivity extends AppCompatActivity implements Observer {
     }
     return super.dispatchTouchEvent(event);
   }
+
+  /*@Override
+  public void onClick(View v) {
+    View diffBeginnerRadio = genDiagFrag.getDialog().findViewById(R.id.radio_diff_beginner);
+    if (v.getId() == R.id.radio_dimensions_three) {
+      diffBeginnerRadio.setEnabled(true);
+    } else {
+      diffBeginnerRadio.setEnabled(false);
+    }
+  }*/
 }

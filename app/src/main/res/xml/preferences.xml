@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+  <adam.javasudoku.GenerateDialogPreference
+    android:key="@string/generate_dialog_preference"
+    android:title="@string/dialog_generate_title"
+    android:dialogMessage="something"
+    android:positiveButtonText="@string/dialog_cancel_button"
+    android:negativeButtonText="@string/dialog_generate_button"/>
+</PreferenceScreen>

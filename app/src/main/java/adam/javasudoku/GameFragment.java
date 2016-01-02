@@ -49,7 +49,7 @@ public class GameFragment extends Fragment implements View.OnClickListener, Obse
   public void onClick(View v) {
     switch (v.getId()) {
       case R.id.game_generate_button:
-        generate();
+        activity.promptGenerate();
         break;
       case R.id.game_reset_button:
         reset();
@@ -65,8 +65,7 @@ public class GameFragment extends Fragment implements View.OnClickListener, Obse
     }
   }
 
-  private void generate() {
-    activity.promptGenerate();
+  public void updateBoard() {
     board.updateDimensions();
     board.fillGrid();
   }
@@ -99,7 +98,7 @@ public class GameFragment extends Fragment implements View.OnClickListener, Obse
     wonDialog.setPositiveButton(getString(R.string.dialog_generate_button), new DialogInterface.OnClickListener() {
       @Override
       public void onClick(DialogInterface dialog, int which) {
-        generate();
+        activity.promptGenerate();
       }
     });
 
@@ -188,13 +187,11 @@ public class GameFragment extends Fragment implements View.OnClickListener, Obse
 
     private SudokuBoard(View view) {
       myGridLayout = (GridLayout) view.findViewById(R.id.game_grid_layout);
-      updateDimensions();
-      myGridLayout.setRowCount(dimensions);
-      myGridLayout.setColumnCount(dimensions);
+      myGridLayout.setBackgroundColor(BLOCK_SEPARATOR);
       textCells = new SparseArray<CellTextView>();
 
       initCellParams();
-      createGrid();
+      updateDimensions();
 
       addObserver(activity);
       addObserver(GameFragment.this);
@@ -202,7 +199,8 @@ public class GameFragment extends Fragment implements View.OnClickListener, Obse
     }
 
     private void createGrid() {
-      myGridLayout.setBackgroundColor(BLOCK_SEPARATOR);
+      myGridLayout.setRowCount(dimensions);
+      myGridLayout.setColumnCount(dimensions);
 
       GridLayout grid;
       for (int r = 0; r < dimensions; ++r) {
@@ -331,6 +329,7 @@ public class GameFragment extends Fragment implements View.OnClickListener, Obse
     private void updateDimensions() {
       if (activity.getSudoku() == null) {
         dimensions = 3;
+        createGrid();
       } else if (dimensions != activity.getSudoku().getDimensions()) {
         dimensions = activity.getSudoku().getDimensions();
         myGridLayout.removeAllViews();

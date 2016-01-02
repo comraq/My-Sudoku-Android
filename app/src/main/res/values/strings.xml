@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">JavaSudoku</string>
+    <string name="app_name">My Sudoku</string>
     <string name="edit_message">Enter a message</string>
 
     <string name="action_settings">Settings</string>
@@ -23,4 +23,11 @@
     <string name="won_dialog_title">Congratulations</string>
     <string name="dialog_ok_button">Ok</string>
     <string name="dialog_generate_button">Generate New Sudoku</string>
+    <string name="dialog_generate_title">Select Your Sudoku to Generate</string>
+    <string name="generate_dialog_preference">generate_dialog_preference</string>
+    <string name="radio_dimensions_three_text">3x3 - 81 Squares</string>
+    <string name="radio_dimensions_four_text">4x4 - 256 Squares</string>
+    <string name="radio_diff_beginner_text">Beginner</string>
+    <string name="radio_diff_casual_text">Casual</string>
+    <string name="radio_diff_challenge_text">Challenge</string>
 </resources>
