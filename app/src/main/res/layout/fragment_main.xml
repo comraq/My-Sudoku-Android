@@ -6,17 +6,24 @@
   android:gravity="center">
 
   <Button
+    android:id="@+id/main_frag_cont_button"
+    android:layout_height="wrap_content"
+    android:layout_width="wrap_content"
+    android:text="@string/main_frag_button_cont"
+    android:layout_gravity="center"/>
+
+  <Button
     android:id="@+id/main_frag_new_button"
     android:layout_height="wrap_content"
     android:layout_width="wrap_content"
-    android:text="@string/button_new_game"
+    android:text="@string/main_frag_button_new_game"
     android:layout_gravity="center"/>
 
   <Button
     android:id="@+id/main_frag_quit_button"
     android:layout_height="wrap_content"
     android:layout_width="wrap_content"
-    android:text="@string/button_quit"
+    android:text="@string/main_frag_button_quit"
     android:layout_gravity="center"/>
 
 </LinearLayout>

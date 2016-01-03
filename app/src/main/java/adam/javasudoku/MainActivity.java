@@ -1,15 +1,12 @@
 package adam.javasudoku;
 
-import android.app.Dialog;
-import android.app.Fragment;
-import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.graphics.Rect;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.preference.DialogPreference;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
@@ -29,14 +26,10 @@ import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
-public class MainActivity extends AppCompatActivity implements Observer, CustomDialogFragment.CustomDialogListener {//, View.OnClickListener {
-
-  //Static Constants
-  //public final static String EXTRA_MESSAGE = "title";
-  private final static int TEST_DIMENSION = 3;
+public class MainActivity extends AppCompatActivity implements Observer, CustomDialogFragment.CustomDialogListener {
 
   private DialogInterface.OnClickListener quitListener, dismissListener;
-  CustomDialogFragment genDiagFrag;
+  private CustomDialogFragment genDiagFrag;
 
   private Sudoku sudoku;
   private List<Integer> hintSquares;
@@ -48,7 +41,6 @@ public class MainActivity extends AppCompatActivity implements Observer, CustomD
     setSupportActionBar(toolbar);
     getSupportActionBar().setIcon(R.mipmap.ic_launcher);
 
-    //generateDialog = new GenerateDialogPreference(this, getResources().getXml(R.xml.preferences));
     initDialogListeners();
     FragmentTransaction ft = getFragmentManager().beginTransaction();
     ft.add(R.id.main_activity, new MainFragment());
@@ -78,7 +70,7 @@ public class MainActivity extends AppCompatActivity implements Observer, CustomD
     // as you specify a parent activity in AndroidManifest.xml.
     switch (item.getItemId()) {
       //noinspection SimplifiableIfStatement
-      case R.id.action_settings:
+      case R.id.action_new_sudoku:
         promptGenerate();
         return true;
 
@@ -86,23 +78,16 @@ public class MainActivity extends AppCompatActivity implements Observer, CustomD
         promptQuit();
         return true;
 
-      case R.id.action_test1:
-        FragmentTransaction ft = getFragmentManager().beginTransaction();
-        ft.replace(R.id.main_activity, new GenerateOptionsFragment());//ft.replace(R.id.frag_generate_preference, new GenerateOptionsFragment());
-        ft.addToBackStack(null);
-        ft.commit();
-        return true;
-
-      case R.id.action_test2:
-        getFragmentManager().popBackStack();
-        return true;
-
       default:
         return super.onOptionsItemSelected(item);
     }
   }
 
-  public void showGameFragment() {
+  public void continueGameFragment() {
+    Log.i("ContinueGame", "placeholder continue output");
+  }
+
+  public void newGameFragment() {
     FragmentTransaction ft = getFragmentManager().beginTransaction();
     ft.replace(R.id.main_activity, new GameFragment());
     ft.addToBackStack(null);
@@ -110,22 +95,23 @@ public class MainActivity extends AppCompatActivity implements Observer, CustomD
   }
 
   public void promptGenerate() {
-    if (genDiagFrag == null) {
-      genDiagFrag = CustomDialogFragment.newInstance(this, R.string.dialog_generate_title, R.string.dialog_generate_button, R.string.dialog_cancel_button);
-      Log.i("test", "new genDiagFrag");
-    }
+    if (genDiagFrag == null) genDiagFrag = CustomDialogFragment.newInstance(this, R.string.dialog_generate_title, R.string.dialog_generate_button, R.string.dialog_cancel_button);
     genDiagFrag.show(getFragmentManager(), "Generate Dialog Fragment");
   }
 
   @Override
   public void doNegClick(int dimensionsId, int diffId) {
     if (!(getFragmentManager().findFragmentById(R.id.main_activity) instanceof GameFragment)) {
-      showGameFragment();
+      newGameFragment();
       getFragmentManager().executePendingTransactions();
     }
-    int dimensions = 3;
-    String diff;
-    if (dimensionsId == R.id.radio_dimensions_four) dimensions = 4;
+    final int dimensions;
+    final String diff;
+    if (dimensionsId == R.id.radio_dimensions_four) {
+      dimensions = 4;
+    } else {
+      dimensions = 3;
+    }
     switch (diffId) {
       case R.id.radio_diff_beginner:
         diff = Solver.BEGINNER;
@@ -139,7 +125,12 @@ public class MainActivity extends AppCompatActivity implements Observer, CustomD
       default:
         diff = Solver.CASUAL;
     }
+
+    //Showing progress dialog while generating 4x4 Sudokus will currently result in stackoverflow
+    //new BackgroundTask(this, dimensions, diff).execute();
+
     newSudoku(dimensions, diff);
+    setActivityTitle();
     GameFragment game = (GameFragment) getFragmentManager().findFragmentById(R.id.main_activity);
     game.updateBoard();
   }
@@ -166,7 +157,6 @@ public class MainActivity extends AppCompatActivity implements Observer, CustomD
     } catch (CloneNotSupportedException e) {
       Toast.makeText(this, R.string.solver_generate_error, Toast.LENGTH_LONG).show();
     }
-    setActivityTitle();
   }
 
   private void initDialogListeners() {
@@ -189,7 +179,7 @@ public class MainActivity extends AppCompatActivity implements Observer, CustomD
       this.setTitle(getString(R.string.app_name));
     } else {
       this.setTitle(sudoku.getDimensions() + "x" + sudoku.getDimensions() + " Sudoku");
-    };
+    }
   }
 
   public Sudoku getSudoku() { return sudoku; }
@@ -209,6 +199,7 @@ public class MainActivity extends AppCompatActivity implements Observer, CustomD
    */
   @Override
   public void onBackPressed() {
+    Log.i("BackStack", "Count: " + getFragmentManager().getBackStackEntryCount());
     if (getFragmentManager().getBackStackEntryCount() > 0) {
       getFragmentManager().popBackStackImmediate();
       setActivityTitle();
@@ -237,13 +228,40 @@ public class MainActivity extends AppCompatActivity implements Observer, CustomD
     return super.dispatchTouchEvent(event);
   }
 
-  /*@Override
-  public void onClick(View v) {
-    View diffBeginnerRadio = genDiagFrag.getDialog().findViewById(R.id.radio_diff_beginner);
-    if (v.getId() == R.id.radio_dimensions_three) {
-      diffBeginnerRadio.setEnabled(true);
-    } else {
-      diffBeginnerRadio.setEnabled(false);
+  //Current solving algorithm causes stackoverflow with the following when generating 4x4 Sudokus
+  @Deprecated
+  private class BackgroundTask extends AsyncTask<Void, Void, Void> {
+    private ProgressDialog dialog;
+    private int dimensions;
+    private String diff;
+
+    public BackgroundTask(MainActivity activity, int dimensions, String diff) {
+      dialog = new ProgressDialog(activity);
+      this.dimensions = dimensions;
+      this.diff = diff;
     }
-  }*/
+
+    @Override
+    protected void onPreExecute() {
+      dialog.setTitle("Generating Sudoku...");
+      dialog.setMessage("Please be patient as generating larger and challenging Sudokus takes time");
+      dialog.show();
+    }
+
+    @Override
+    protected void onPostExecute(Void result) {
+      if (dialog.isShowing()) {
+        dialog.dismiss();
+        setActivityTitle();
+        GameFragment game = (GameFragment) getFragmentManager().findFragmentById(R.id.main_activity);
+        game.updateBoard();
+      }
+    }
+
+    @Override
+    protected Void doInBackground(Void... params) {
+      newSudoku(dimensions, diff);
+      return null;
+    }
+  }
 }

@@ -4,19 +4,9 @@
   tools:context="adam.javasudoku.MainActivity">
 
   <item
-    android:id="@+id/action_test1"
-    android:orderInCategory="98"
-    android:title="test1"/>
-
-  <item
-    android:id="@+id/action_test2"
-    android:orderInCategory="99"
-    android:title="test2"/>
-
-  <item
-    android:id="@+id/action_settings"
+    android:id="@+id/action_new_sudoku"
     android:orderInCategory="100"
-    android:title="@string/action_settings"
+    android:title="@string/action_new_sudoku"
     app:showAsAction="never" />
 
   <item

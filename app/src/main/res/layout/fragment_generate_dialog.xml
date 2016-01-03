@@ -3,10 +3,10 @@
   xmlns:android="http://schemas.android.com/apk/res/android"
   android:orientation="vertical"
   android:layout_width="wrap_content"
-  android:layout_height="wrap_content"
+  android:layout_height="match_parent"
   android:gravity="center_horizontal"
   android:padding="30dp"
-  android:divider="?android:dividerHorizontal"
+  android:divider="@drawable/divider_drawable"
   android:showDividers="middle">
 
   <RadioGroup
@@ -14,8 +14,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:gravity="center_horizontal"
-    android:paddingBottom="12dp">
+    android:gravity="center_horizontal">
     <RadioButton
       android:id="@+id/radio_dimensions_three"
       android:layout_width="wrap_content"
@@ -34,8 +33,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:gravity="center_horizontal"
-    android:paddingTop="12dp">
+    android:gravity="center_horizontal">
     <RadioButton
       android:id="@+id/radio_diff_beginner"
       android:layout_width="wrap_content"

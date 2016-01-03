@@ -2,7 +2,6 @@ package adam.javasudoku;
 
 import android.app.Activity;
 import android.content.Context;
-import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
@@ -10,15 +9,13 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import android.widget.Toast;
 
 /**
  * Created by adam on 2015-12-29.
  */
-public class CustomDialogFragment extends DialogFragment implements RadioGroup.OnCheckedChangeListener {//}, DialogInterface.OnShowListener {
+public class CustomDialogFragment extends DialogFragment implements RadioGroup.OnCheckedChangeListener {
 
   private static final String TITLE = "title";
   private static final String NEG_BUTTON = "neg";
@@ -26,7 +23,11 @@ public class CustomDialogFragment extends DialogFragment implements RadioGroup.O
 
   private CustomDialogListener dialogListener;
 
-  public static CustomDialogFragment newInstance(Context context, int titleId, int negButtonId, int posButtonId) {//int msgId) {
+  interface CustomDialogListener {
+    void doNegClick(int id1, int id2);
+  }
+
+  public static CustomDialogFragment newInstance(Context context, int titleId, int negButtonId, int posButtonId) {
     CustomDialogFragment f = new CustomDialogFragment();
     Bundle b = new Bundle();
 
@@ -49,21 +50,6 @@ public class CustomDialogFragment extends DialogFragment implements RadioGroup.O
         ((RadioButton) getDialog().findViewById(R.id.radio_diff_casual)).setChecked(true);
       }
     }
-  }
-
-  /*@Override
-  public void onShow(DialogInterface dialog) {
-    theDialog.findViewById(R.id.radio_dimensions_three).setOnClickListener(this);
-    theDialog.findViewById(R.id.radio_dimensions_four).setOnClickListener(this);
-
-    View dimensionRadioThree = getDialog().findViewById(R.id.radio_dimensions_three);
-    View dimensionRadioFour = getDialog().findViewById(R.id.radio_dimensions_three);
-    dimensionRadioThree.setOnClickListener(this);
-    dimensionRadioFour.setOnClickListener(this);
-  }*/
-
-  interface CustomDialogListener {
-    void doNegClick(int id1, int id2);
   }
 
   @Override
@@ -91,28 +77,12 @@ public class CustomDialogFragment extends DialogFragment implements RadioGroup.O
     });
 
     LayoutInflater i = getActivity().getLayoutInflater();
-    View dialogView = i.inflate(R.layout.dialogpreference_generate, null);
+    View dialogView = i.inflate(R.layout.fragment_generate_dialog, null);
     builder.setView(dialogView);
-
-    //dialogView.findViewById(R.id.radio_dimensions_three).setOnClickListener(this);
-    //dialogView.findViewById(R.id.radio_dimensions_four).setOnClickListener(this);
     ((RadioGroup)dialogView.findViewById(R.id.radio_dimensions_group)).setOnCheckedChangeListener(this);
 
     return builder.create();
   }
-
-  /*@Override
-  public void onClick(View v) {
-    RadioButton diffBeginnerRadio = (RadioButton) getDialog().findViewById(R.id.radio_diff_beginner);
-    if (v.getId() == R.id.radio_dimensions_three) {
-      diffBeginnerRadio.setEnabled(true);
-    } else {
-      diffBeginnerRadio.setEnabled(false);
-      if (diffBeginnerRadio.isChecked()) {
-        ((RadioButton) getDialog().findViewById(R.id.radio_diff_casual)).setChecked(true);
-      }
-    }
-  }*/
 
   @Override
   public void onAttach(Activity activity) {
