@@ -10,7 +10,6 @@ import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Menu;
@@ -224,7 +223,6 @@ public class MainActivity extends AppCompatActivity implements Observer, CustomD
       if (sudoku != null) ft.addToBackStack(null);
       ft.commit();
     } else {
-      Log.i("BackStack", "Count: " + getFragmentManager().getBackStackEntryCount());
       promptQuit();
     }
   }
