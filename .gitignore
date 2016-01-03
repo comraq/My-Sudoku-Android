@@ -1,6 +1,6 @@
-/*
-!.gitignore
-!src
-!MySudoku.apk
-!README.md
-/README.md.un~
+/build*
+/lib
+/*.iml
+/*.pro
+/*.un~
+

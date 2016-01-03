@@ -36,7 +36,7 @@ public class MainActivity extends AppCompatActivity implements Observer, CustomD
     setContentView(R.layout.activity_main);
     Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
     setSupportActionBar(toolbar);
-    getSupportActionBar().setIcon(R.mipmap.ic_launcher);
+    getSupportActionBar().setIcon(R.mipmap.app_icon);
 
     initDialogListeners();
     FragmentTransaction ft = getFragmentManager().beginTransaction();
