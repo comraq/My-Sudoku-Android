@@ -20,6 +20,14 @@
     android:layout_gravity="center"/>
 
   <Button
+    android:id="@+id/main_frag_load_button"
+    android:layout_height="wrap_content"
+    android:layout_width="wrap_content"
+    android:text="@string/main_frag_button_load_game"
+    android:layout_gravity="center"
+    android:enabled="false"/>
+
+  <Button
     android:id="@+id/main_frag_quit_button"
     android:layout_height="wrap_content"
     android:layout_width="wrap_content"

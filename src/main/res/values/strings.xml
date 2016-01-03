@@ -5,10 +5,10 @@
     <string name="action_new_sudoku">New Sudoku</string>
     <string name="action_exit">Exit</string>
 
-    <string name="button_generate">Generate</string>
-    <string name="button_reset">Reset</string>
-    <string name="button_hint">Hint</string>
-    <string name="button_check">Check</string>
+    <string name="game_frag_button_generate">Generate</string>
+    <string name="game_frag_button_reset">Reset</string>
+    <string name="game_frag_button_hint">Hint</string>
+    <string name="game_frag_button_check">Check</string>
     <string name="main_frag_button_quit">Quit</string>
     <string name="main_frag_button_new_game">New Game</string>
 
@@ -25,10 +25,15 @@
     <string name="dialog_generate_button">Generate New Sudoku</string>
     <string name="dialog_generate_title">Select Your Sudoku to Generate</string>
     <string name="generate_dialog_preference">generate_dialog_preference</string>
-    <string name="radio_dimensions_three_text">3x3 - 81 Squares</string>
-    <string name="radio_dimensions_four_text">4x4 - 256 Squares</string>
+    <string name="radio_dimensions_three_text">3x3 – 81 Squares</string>
+    <string name="radio_dimensions_four_text">4x4 – 256 Squares</string>
     <string name="radio_diff_beginner_text">Beginner</string>
     <string name="radio_diff_casual_text">Casual</string>
     <string name="radio_diff_challenge_text">Challenge</string>
     <string name="main_frag_button_cont">Continue</string>
+    <string name="new_dialog_title">New Game</string>
+    <string name="new_dialog_message">There currently is a game in progress, are you sure you want forfeit and start a new game?</string>
+    <string name="main_frag_button_load_game">Load Game</string>
+    <string name="game_frag_button_save_game">Save Game</string>
+    <string name="app_saved_game_filename">My_Sudoku_Saved_Game</string>
 </resources>

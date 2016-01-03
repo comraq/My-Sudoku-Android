@@ -8,7 +8,7 @@ import android.view.Gravity;
 import android.widget.EditText;
 
 /**
- * Created by adam on 2015-12-29.
+ * Custom EditText class used in this Sudoku application
  */
 public class CellTextView extends EditText {
   private final static int INCORRECT = Color.parseColor("#f97474");

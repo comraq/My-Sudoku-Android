@@ -32,35 +32,19 @@ public class GameFragment extends Fragment implements View.OnClickListener, Obse
   private final static int BLOCK_SEPARATOR = Color.parseColor("#6ced38");
   private final static int GRID_LINES = Color.parseColor("#96dfe1");
 
-  private Button generateButton, resetButton, hintButton, checkButton;
+  private Button generateButton, resetButton, hintButton, checkButton, saveButton;
   private TextView statusTextView;
   private DialogInterface.OnClickListener resetListener;
 
   private SudokuBoard board;
   private MainActivity activity;
 
+  @Nullable
   @Override
-  public void onCreate(Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
-    Log.i("GameFrag", "onCreate");
-  }
-
-  @Override
-  public void onSaveInstanceState(Bundle outState) {
-    super.onSaveInstanceState(outState);
-    Log.i("GameFrag", "onSaveInstanceState");
-  }
-
-  @Override
-  public void onPause() {
-    super.onPause();
-    Log.i("GameFrag", "onPause");
-  }
-
-  @Override
-  public void onStop() {
-    super.onStop();
-    Log.i("GameFrag", "onStop");
+  public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    View v = inflater.inflate(R.layout.fragment_game, container, false);
+    initialize(v);
+    return v;
   }
 
   @Override
@@ -68,40 +52,6 @@ public class GameFragment extends Fragment implements View.OnClickListener, Obse
     if (activity.getSudoku() != null)
       board.saveGrid();
     super.onDestroyView();
-    Log.i("GameFrag", "onDestroyView");
-  }
-
-  @Override
-  public void onDestroy() {
-    super.onDestroy();
-    Log.i("GameFrag", "onDestroy");
-  }
-
-  @Override
-  public void onDetach() {
-    super.onDetach();
-    Log.i("GameFrag", "onDetach");
-  }
-
-  @Override
-  public void onStart() {
-    super.onStart();
-    Log.i("GameFrag", "onStart");
-  }
-
-  @Override
-  public void onResume() {
-    super.onResume();
-    Log.i("GameFrag", "onResume");
-  }
-
-  @Nullable
-  @Override
-  public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-    View v = inflater.inflate(R.layout.fragment_game, container, false);
-    initialize(v);
-    Log.i("GameFrag", "onCreateView");
-    return v;
   }
 
   @Override
@@ -118,6 +68,9 @@ public class GameFragment extends Fragment implements View.OnClickListener, Obse
         break;
       case R.id.game_check_button:
         board.check();
+        break;
+      case R.id.game_save_button:
+        activity.promptSave();
         break;
       default:
         Toast.makeText(getActivity(), "Unidentified button! id: " + v.getId(), Toast.LENGTH_SHORT).show();
@@ -169,18 +122,19 @@ public class GameFragment extends Fragment implements View.OnClickListener, Obse
     //Initializing fields in GameFragment
     activity = (MainActivity) getActivity();
 
+    statusTextView = (TextView) v.findViewById(R.id.game_frag_textview_status);
     generateButton = (Button) v.findViewById(R.id.game_generate_button);
     resetButton = (Button) v.findViewById(R.id.game_reset_button);
     hintButton = (Button) v.findViewById(R.id.game_hint_button);
     checkButton = (Button) v.findViewById(R.id.game_check_button);
-    statusTextView = (TextView) v.findViewById(R.id.game_status_panel);
+    saveButton = (Button) v.findViewById(R.id.game_save_button);
 
     generateButton.setOnClickListener(this);
     resetButton.setOnClickListener(this);
     hintButton.setOnClickListener(this);
     checkButton.setOnClickListener(this);
+    saveButton.setOnClickListener(this);
 
-    Log.i("GameFrag", "board == null? " + (board == null) + " resetListener == null? " + (resetListener == null));
     if (board == null) {
       board = new SudokuBoard(v);
       resetListener = new DialogInterface.OnClickListener() {

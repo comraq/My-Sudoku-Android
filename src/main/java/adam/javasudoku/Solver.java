@@ -204,14 +204,12 @@ public class Solver {
     randSquares = null;
 
     //Check whether the generated Sudoku yields a unique solution, if not, add the square responsible for multiple solutions
-    int addedS = 0;
     if (!multi) {
       Solution tempSolution;
       do {
         tempSolution = checkSolve(solution.clone());
         if (tempSolution.getMultiVal() != 0) {
           solution.getCells().get(tempSolution.getMultiSquare()).setValue(tempSolution.getMultiVal());
-          ++addedS;
         }
       } while (tempSolution.getMultiVal() != 0);
       setGenValues(tempSolution); //Copying the list of values into genValues for answer checking 

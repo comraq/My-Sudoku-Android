@@ -1,6 +1,5 @@
 package adam.javasudoku;
 
-import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.app.Fragment;
@@ -15,60 +14,7 @@ import android.widget.Button;
  */
 public class MainFragment extends Fragment implements View.OnClickListener {
 
-  Button newButton, loadButton, continueButton, quitButton;
-
-  @Override
-  public void onCreate(Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
-    Log.i("MainFrag", "onCreate");
-  }
-  @Override
-  public void onSaveInstanceState(Bundle outState) {
-    super.onSaveInstanceState(outState);
-    Log.i("MainFrag", "onSaveInstanceState");
-  }
-
-  @Override
-  public void onPause() {
-    super.onPause();
-    Log.i("MainFrag", "onPause");
-  }
-
-  @Override
-  public void onStop() {
-    super.onStop();
-    Log.i("MainFrag", "onStop");
-  }
-
-  @Override
-  public void onDestroyView() {
-    super.onDestroyView();
-    Log.i("MainFrag", "onDestroyView");
-  }
-
-  @Override
-  public void onDestroy() {
-    super.onDestroy();
-    Log.i("MainFrag", "onDestroy");
-  }
-
-  @Override
-  public void onDetach() {
-    super.onDetach();
-    Log.i("MainFrag", "onDetach");
-  }
-
-  @Override
-  public void onStart() {
-    super.onStart();
-    Log.i("MainFrag", "onStart");
-  }
-
-  @Override
-  public void onResume() {
-    super.onResume();
-    Log.i("MainFrag", "onResume");
-  }
+  Button continueButton, newButton, loadButton, quitButton;
 
   @Nullable
   @Override
@@ -87,7 +33,10 @@ public class MainFragment extends Fragment implements View.OnClickListener {
         ((MainActivity)getActivity()).continueGameFragment();
         break;
       case R.id.main_frag_new_button:
-        ((MainActivity)getActivity()).newGameFragment();
+        ((MainActivity)getActivity()).promptNew();
+        break;
+      case R.id.main_frag_load_button:
+        ((MainActivity)getActivity()).promptLoad();
         break;
       case R.id.main_frag_quit_button:
         ((MainActivity)getActivity()).promptQuit();
@@ -100,10 +49,12 @@ public class MainFragment extends Fragment implements View.OnClickListener {
   private void initialize(View v) {
     continueButton = (Button) v.findViewById(R.id.main_frag_cont_button);
     newButton = (Button) v.findViewById(R.id.main_frag_new_button);
+    loadButton = (Button) v.findViewById(R.id.main_frag_load_button);
     quitButton = (Button) v.findViewById(R.id.main_frag_quit_button);
 
     continueButton.setOnClickListener(this);
     newButton.setOnClickListener(this);
+    loadButton.setOnClickListener(this);
     quitButton.setOnClickListener(this);
 
     if (((MainActivity) getActivity()).getSudoku() == null) continueButton.setEnabled(false);

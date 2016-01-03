@@ -7,8 +7,6 @@ import android.content.DialogInterface;
 import android.graphics.Rect;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -45,15 +43,6 @@ public class MainActivity extends AppCompatActivity implements Observer, CustomD
     FragmentTransaction ft = getFragmentManager().beginTransaction();
     ft.add(R.id.main_activity, new MainFragment());
     ft.commit();
-
-    /*FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-    fab.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View view) {
-        Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-          .setAction("Action", null).show();
-      }
-    });*/
   }
 
   @Override
@@ -83,16 +72,26 @@ public class MainActivity extends AppCompatActivity implements Observer, CustomD
     }
   }
 
-  public void continueGameFragment() {
-    Log.i("ContinueGame", "placeholder continue output");
-    getFragmentManager().popBackStack();
-  }
+  public void continueGameFragment() { getFragmentManager().popBackStack(); }
 
-  public void newGameFragment() {
-    FragmentTransaction ft = getFragmentManager().beginTransaction();
-    ft.replace(R.id.main_activity, new GameFragment());
-    //ft.addToBackStack(null);
-    ft.commit();
+  public void promptNew() {
+    if (getFragmentManager().getBackStackEntryCount() > 0) {
+      AlertDialog.Builder newDialog = new AlertDialog.Builder(this);
+
+      newDialog.setTitle(getString(R.string.new_dialog_title));
+      newDialog.setMessage(getString(R.string.new_dialog_message));
+
+      newDialog.setNegativeButton(R.string.dialog_yes_button, new DialogInterface.OnClickListener() {
+        @Override
+        public void onClick(DialogInterface dialog, int which) {
+          newGameFragment();
+        }
+      });
+      newDialog.setPositiveButton(R.string.dialog_cancel_button, dismissListener);
+      newDialog.show();
+    } else {
+      newGameFragment();
+    }
   }
 
   public void promptGenerate() {
@@ -135,6 +134,14 @@ public class MainActivity extends AppCompatActivity implements Observer, CustomD
     game.updateBoard();
   }
 
+  public void promptLoad() {
+    loadCurrentGame();
+  }
+
+  public void promptSave() {
+    saveCurrentGame();
+  }
+
   public void promptQuit() {
     AlertDialog.Builder quitDialog = new AlertDialog.Builder(this);
 
@@ -144,6 +151,20 @@ public class MainActivity extends AppCompatActivity implements Observer, CustomD
     quitDialog.setNegativeButton(R.string.dialog_yes_button, quitListener);
     quitDialog.setPositiveButton(R.string.dialog_cancel_button, dismissListener);
     quitDialog.show();
+  }
+
+  public void setActivityTitle() {
+    if (getFragmentManager().findFragmentById(R.id.main_activity) instanceof MainFragment) {
+      this.setTitle(getString(R.string.app_name));
+    } else {
+      this.setTitle(sudoku.getDimensions() + "x" + sudoku.getDimensions() + " Sudoku");
+    }
+  }
+
+  private void newGameFragment() {
+    FragmentTransaction ft = getFragmentManager().beginTransaction();
+    ft.replace(R.id.main_activity, new GameFragment());
+    ft.commit();
   }
 
   private void newSudoku(int newDimensions, String difficulty) {
@@ -159,6 +180,12 @@ public class MainActivity extends AppCompatActivity implements Observer, CustomD
     }
   }
 
+  private void loadCurrentGame() {}
+
+  private void saveCurrentGame() {
+    //File savedGame = new File(getFilesDir(), getString(R.string.app_saved_game_filename));
+  }
+
   private void initDialogListeners() {
     quitListener = new DialogInterface.OnClickListener() {
       @Override
@@ -172,14 +199,6 @@ public class MainActivity extends AppCompatActivity implements Observer, CustomD
         dialog.dismiss();
       }
     };
-  }
-
-  public void setActivityTitle() {
-    if (getFragmentManager().findFragmentById(R.id.main_activity) instanceof MainFragment) {
-      this.setTitle(getString(R.string.app_name));
-    } else {
-      this.setTitle(sudoku.getDimensions() + "x" + sudoku.getDimensions() + " Sudoku");
-    }
   }
 
   public Sudoku getSudoku() { return sudoku; }
@@ -205,12 +224,7 @@ public class MainActivity extends AppCompatActivity implements Observer, CustomD
       if (sudoku != null) ft.addToBackStack(null);
       ft.commit();
     } else {
-    Log.i("BackStack", "Count: " + getFragmentManager().getBackStackEntryCount());
-    /*if (getFragmentManager().getBackStackEntryCount() > 0) {
-      //saveCurrentGame();
-      getFragmentManager().popBackStackImmediate();
-      setActivityTitle();
-    } else {*/
+      Log.i("BackStack", "Count: " + getFragmentManager().getBackStackEntryCount());
       promptQuit();
     }
   }

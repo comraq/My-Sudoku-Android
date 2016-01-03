@@ -13,7 +13,7 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
 /**
- * Created by adam on 2015-12-29.
+ * A custom dialog fragment class for the custom generate dialog
  */
 public class CustomDialogFragment extends DialogFragment implements RadioGroup.OnCheckedChangeListener {
 

@@ -10,7 +10,7 @@
   android:paddingTop="@dimen/activity_vertical_margin">
 
   <TextView
-    android:id="@+id/game_status_panel"
+    android:id="@+id/game_frag_textview_status"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:minLines="3"
@@ -21,10 +21,6 @@
     android:background="@drawable/border"
     android:textStyle="bold"
     android:typeface="serif"/>
-
-  <!-- android:id="@+id/frag_generate_preference"
-               android:layout_width="wrap_content"
-               android:layout_height="wrap_content"/-->
 
   <android.support.v7.widget.GridLayout
     android:id="@+id/game_grid_layout"
@@ -39,33 +35,42 @@
     android:layout_width="match_parent"
     android:gravity="center_horizontal">
 
-
     <Button
       android:id="@+id/game_generate_button"
       android:layout_height="wrap_content"
       android:layout_width="0dp"
       android:layout_weight="1"
-      android:text="@string/button_generate"/>
+      android:text="@string/game_frag_button_generate"/>
 
     <Button
       android:id="@+id/game_reset_button"
       android:layout_height="wrap_content"
       android:layout_width="0dp"
       android:layout_weight="1"
-      android:text="@string/button_reset"/>
+      android:text="@string/game_frag_button_reset"/>
 
     <Button
       android:id="@+id/game_hint_button"
       android:layout_height="wrap_content"
       android:layout_width="0dp"
       android:layout_weight="1"
-      android:text="@string/button_hint"/>
+      android:text="@string/game_frag_button_hint"/>
 
     <Button
       android:id="@+id/game_check_button"
       android:layout_height="wrap_content"
       android:layout_width="0dp"
       android:layout_weight="1"
-      android:text="@string/button_check"/>
+      android:text="@string/game_frag_button_check"/>
   </LinearLayout>
+
+  <Button
+    android:id="@+id/game_save_button"
+    android:layout_height="wrap_content"
+    android:layout_width="wrap_content"
+    android:layout_gravity="center_horizontal"
+    android:paddingLeft="25dp"
+    android:paddingRight="25dp"
+    android:text="@string/game_frag_button_save_game"
+    android:enabled="false"/>
 </LinearLayout>
