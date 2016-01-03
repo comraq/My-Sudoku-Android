@@ -85,12 +85,13 @@ public class MainActivity extends AppCompatActivity implements Observer, CustomD
 
   public void continueGameFragment() {
     Log.i("ContinueGame", "placeholder continue output");
+    getFragmentManager().popBackStack();
   }
 
   public void newGameFragment() {
     FragmentTransaction ft = getFragmentManager().beginTransaction();
     ft.replace(R.id.main_activity, new GameFragment());
-    ft.addToBackStack(null);
+    //ft.addToBackStack(null);
     ft.commit();
   }
 
@@ -130,7 +131,6 @@ public class MainActivity extends AppCompatActivity implements Observer, CustomD
     //new BackgroundTask(this, dimensions, diff).execute();
 
     newSudoku(dimensions, diff);
-    setActivityTitle();
     GameFragment game = (GameFragment) getFragmentManager().findFragmentById(R.id.main_activity);
     game.updateBoard();
   }
@@ -174,7 +174,7 @@ public class MainActivity extends AppCompatActivity implements Observer, CustomD
     };
   }
 
-  private void setActivityTitle() {
+  public void setActivityTitle() {
     if (getFragmentManager().findFragmentById(R.id.main_activity) instanceof MainFragment) {
       this.setTitle(getString(R.string.app_name));
     } else {
@@ -199,11 +199,18 @@ public class MainActivity extends AppCompatActivity implements Observer, CustomD
    */
   @Override
   public void onBackPressed() {
+    if (getFragmentManager().findFragmentById(R.id.main_activity) instanceof GameFragment) {
+      FragmentTransaction ft = getFragmentManager().beginTransaction();
+      ft.replace(R.id.main_activity, new MainFragment());
+      if (sudoku != null) ft.addToBackStack(null);
+      ft.commit();
+    } else {
     Log.i("BackStack", "Count: " + getFragmentManager().getBackStackEntryCount());
-    if (getFragmentManager().getBackStackEntryCount() > 0) {
+    /*if (getFragmentManager().getBackStackEntryCount() > 0) {
+      //saveCurrentGame();
       getFragmentManager().popBackStackImmediate();
       setActivityTitle();
-    } else {
+    } else {*/
       promptQuit();
     }
   }

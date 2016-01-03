@@ -18,6 +18,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
@@ -44,18 +45,63 @@ public class GameFragment extends Fragment implements View.OnClickListener, Obse
     Log.i("GameFrag", "onCreate");
   }
 
+  @Override
+  public void onSaveInstanceState(Bundle outState) {
+    super.onSaveInstanceState(outState);
+    Log.i("GameFrag", "onSaveInstanceState");
+  }
+
+  @Override
+  public void onPause() {
+    super.onPause();
+    Log.i("GameFrag", "onPause");
+  }
+
+  @Override
+  public void onStop() {
+    super.onStop();
+    Log.i("GameFrag", "onStop");
+  }
+
+  @Override
+  public void onDestroyView() {
+    if (activity.getSudoku() != null)
+      board.saveGrid();
+    super.onDestroyView();
+    Log.i("GameFrag", "onDestroyView");
+  }
+
+  @Override
+  public void onDestroy() {
+    super.onDestroy();
+    Log.i("GameFrag", "onDestroy");
+  }
+
+  @Override
+  public void onDetach() {
+    super.onDetach();
+    Log.i("GameFrag", "onDetach");
+  }
+
+  @Override
+  public void onStart() {
+    super.onStart();
+    Log.i("GameFrag", "onStart");
+  }
+
+  @Override
+  public void onResume() {
+    super.onResume();
+    Log.i("GameFrag", "onResume");
+  }
+
   @Nullable
   @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     View v = inflater.inflate(R.layout.fragment_game, container, false);
     initialize(v);
+    Log.i("GameFrag", "onCreateView");
     return v;
-  }
-
-  @Override
-  public void onSaveInstanceState(Bundle outState) {
-    super.onSaveInstanceState(outState);
-    Log.i("GameFrag", "onSaveInstanceState");
   }
 
   @Override
@@ -81,6 +127,7 @@ public class GameFragment extends Fragment implements View.OnClickListener, Obse
   public void updateBoard() {
     board.updateDimensions();
     board.fillGrid();
+    activity.setActivityTitle();
   }
 
   private void reset() {
@@ -133,13 +180,18 @@ public class GameFragment extends Fragment implements View.OnClickListener, Obse
     hintButton.setOnClickListener(this);
     checkButton.setOnClickListener(this);
 
-    board = new SudokuBoard(v);
-    resetListener = new DialogInterface.OnClickListener() {
-      @Override
-      public void onClick(DialogInterface dialog, int which) {
-        board.resetGrid();
-      }
-    };
+    Log.i("GameFrag", "board == null? " + (board == null) + " resetListener == null? " + (resetListener == null));
+    if (board == null) {
+      board = new SudokuBoard(v);
+      resetListener = new DialogInterface.OnClickListener() {
+        @Override
+        public void onClick(DialogInterface dialog, int which) {
+          board.resetGrid();
+        }
+      };
+    } else {
+      board.restoreGrid(v);
+    }
   }
 
   public enum SudokuState {
@@ -196,12 +248,16 @@ public class GameFragment extends Fragment implements View.OnClickListener, Obse
     private GridLayout myGridLayout;
     private GridLayout.LayoutParams gridParams, cellParams;
     private SparseArray<CellTextView> textCells;
+    private List<Integer> cellValues, cellColours;
     private int dimensions;
+    private SudokuState currentState;
 
     private SudokuBoard(View view) {
       myGridLayout = (GridLayout) view.findViewById(R.id.game_grid_layout);
       myGridLayout.setBackgroundColor(BLOCK_SEPARATOR);
       textCells = new SparseArray<CellTextView>();
+      cellValues = new ArrayList<Integer>();
+      cellColours = new ArrayList<Integer>();
 
       initCellParams();
       updateDimensions();
@@ -331,6 +387,42 @@ public class GameFragment extends Fragment implements View.OnClickListener, Obse
       }
     }
 
+    private void saveGrid() {
+      cellValues.clear();
+      cellColours.clear();
+      for (int i = 0; i < textCells.size(); ++i) {
+        if (textCells.get(i).getText().toString().equals("")) {
+          cellValues.add(0);
+        } else {
+          cellValues.add(Integer.valueOf(textCells.get(i).getText().toString()));
+        }
+        cellColours.add(textCells.get(i).getBackgroundColour());
+      }
+    }
+
+    private void restoreGrid(View view) {
+      myGridLayout = (GridLayout) view.findViewById(R.id.game_grid_layout);
+      myGridLayout.setBackgroundColor(BLOCK_SEPARATOR);
+      textCells = new SparseArray<CellTextView>();
+
+      createGrid();
+      CellTextView textCell;
+      for (int i = 0; i < cellValues.size(); ++i) {
+        textCell = textCells.get(i);
+        textCell.removeTextChangedListener(this);
+        if (cellValues.get(i) != 0) textCell.setText(Integer.toString(cellValues.get(i)));
+        if (cellColours.get(i) == CellTextView.DISABLED) {
+          textCell.setEnabled(false);
+        } else {
+          textCell.setEnabled(true);
+          textCell.setBackgroundColor(cellColours.get(i));
+        }
+        textCell.addTextChangedListener(this);
+      }
+      activity.setActivityTitle();
+      updateState(currentState);
+    }
+
     private void initCellParams() {
       gridParams = new GridLayout.LayoutParams();
       cellParams = new GridLayout.LayoutParams();
@@ -367,6 +459,7 @@ public class GameFragment extends Fragment implements View.OnClickListener, Obse
     }
 
     private void updateState(SudokuState nextState) {
+      currentState = nextState;
       setChanged();
       notifyObservers(nextState);
     }

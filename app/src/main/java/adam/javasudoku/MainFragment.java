@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,11 +17,66 @@ public class MainFragment extends Fragment implements View.OnClickListener {
 
   Button newButton, loadButton, continueButton, quitButton;
 
+  @Override
+  public void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    Log.i("MainFrag", "onCreate");
+  }
+  @Override
+  public void onSaveInstanceState(Bundle outState) {
+    super.onSaveInstanceState(outState);
+    Log.i("MainFrag", "onSaveInstanceState");
+  }
+
+  @Override
+  public void onPause() {
+    super.onPause();
+    Log.i("MainFrag", "onPause");
+  }
+
+  @Override
+  public void onStop() {
+    super.onStop();
+    Log.i("MainFrag", "onStop");
+  }
+
+  @Override
+  public void onDestroyView() {
+    super.onDestroyView();
+    Log.i("MainFrag", "onDestroyView");
+  }
+
+  @Override
+  public void onDestroy() {
+    super.onDestroy();
+    Log.i("MainFrag", "onDestroy");
+  }
+
+  @Override
+  public void onDetach() {
+    super.onDetach();
+    Log.i("MainFrag", "onDetach");
+  }
+
+  @Override
+  public void onStart() {
+    super.onStart();
+    Log.i("MainFrag", "onStart");
+  }
+
+  @Override
+  public void onResume() {
+    super.onResume();
+    Log.i("MainFrag", "onResume");
+  }
+
   @Nullable
   @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     View v = inflater.inflate(R.layout.fragment_main, container, false);
     initialize(v);
+    ((MainActivity) getActivity()).setActivityTitle();
+    Log.i("MainFrag", "onCreateView");
     return v;
   }
 

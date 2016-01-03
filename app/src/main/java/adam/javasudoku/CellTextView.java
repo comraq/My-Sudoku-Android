@@ -15,7 +15,9 @@ public class CellTextView extends EditText {
   private final static int CORRECT = Color.GREEN;
   private final static int UNCHECK = Color.WHITE;
   private final static int HINT = Color.YELLOW;
-  private final static int DISABLED = Color.rgb(240, 240, 240);
+  public final static int DISABLED = Color.rgb(240, 240, 240);
+
+  private int backgroundColour;
 
   public CellTextView(Context context, int maxLength) {
     super(context);
@@ -38,6 +40,12 @@ public class CellTextView extends EditText {
   }
 
   @Override
+  public void setBackgroundColor(int colour) {
+    super.setBackgroundColor(colour);
+    backgroundColour = colour;
+  }
+
+  @Override
   public void setEnabled(boolean bool) {
     super.setEnabled(bool);
     if (bool) {
@@ -54,4 +62,6 @@ public class CellTextView extends EditText {
   public void uncheck() { setBackgroundColor(UNCHECK); }
 
   public void hinted() { setBackgroundColor(HINT); }
+
+  public int getBackgroundColour() { return backgroundColour; }
 }
