@@ -22,7 +22,6 @@ public class MainFragment extends Fragment implements View.OnClickListener {
     View v = inflater.inflate(R.layout.fragment_main, container, false);
     initialize(v);
     ((MainActivity) getActivity()).setActivityTitle();
-    Log.i("MainFrag", "onCreateView");
     return v;
   }
 
